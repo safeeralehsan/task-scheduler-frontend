@@ -3,7 +3,12 @@ import CreateTaskForm from './components/create-task-form'
 import { useAppSelector } from './hooks/useAppSelector'
 import { useEffect } from 'react'
 import { useAppDispatch } from './hooks/useAppDispatch'
-import { fetchTasks } from './store/tasks/tasksSlice'
+import { completeTask, fetchTasks } from './store/tasks/tasksSlice'
+import { collection, onSnapshot, query } from 'firebase/firestore'
+import { firestoreDB } from './config/firestore'
+import { TaskStatus } from './lib/constants'
+import { Task } from './lib/types'
+import { toast } from './components/ui/use-toast'
 
 function App() {
   const { taskList } = useAppSelector(state => state.tasks)
@@ -11,7 +16,25 @@ function App() {
 
   useEffect(() => {
     dispatch(fetchTasks('user'))
-  })
+    const q = query(collection(firestoreDB, "tasks"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === 'modified') {
+          const updatedTask = change.doc.data() as Task
+          if (updatedTask.status === TaskStatus.COMPLETE) {
+            dispatch(completeTask(updatedTask.id))
+            toast({
+              title: `Task: ${updatedTask.title}, has been completed!`,
+              variant: "default"
+            })
+          }
+        }
+      });
+    });
+    return (() => {
+      unsubscribe()
+    })
+  }, [])
 
   return (
     <>
