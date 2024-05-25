@@ -1,9 +1,17 @@
 import TaskCard from './components/task-card'
 import CreateTaskForm from './components/create-task-form'
 import { useAppSelector } from './hooks/useAppSelector'
+import { useEffect } from 'react'
+import { useAppDispatch } from './hooks/useAppDispatch'
+import { fetchTasks } from './store/tasks/tasksSlice'
 
 function App() {
   const { taskList } = useAppSelector(state => state.tasks)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    dispatch(fetchTasks('user'))
+  })
 
   return (
     <>
@@ -17,7 +25,7 @@ function App() {
           {
             taskList.map(task => {
               return (
-                <TaskCard key={task.title} task={task} />
+                <TaskCard key={task.id} task={task} />
               )
             })
           }

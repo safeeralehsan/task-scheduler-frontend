@@ -14,7 +14,7 @@ import { format } from "date-fns"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
 import { TaskStatus } from "../../lib/constants"
 import { useState } from "react"
-import { Task } from "../../lib/types"
+import { TaskDetails } from "../../lib/types"
 import { useAppDispatch } from "../../hooks/useAppDispatch"
 import { createTask } from "../../store/tasks/tasksSlice"
 
@@ -46,7 +46,7 @@ const CreateTaskForm = () => {
               variant: "destructive"
             })
         }
-        const task: Task = {
+        const task: TaskDetails = {
             ...data,
             status: taskStatus as keyof typeof TaskStatus
         }
